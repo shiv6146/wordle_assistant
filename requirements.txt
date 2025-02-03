@@ -2,3 +2,4 @@ beautifulsoup4
 mesop
 gunicorn
 pandas
+requests
