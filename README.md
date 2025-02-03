@@ -1,6 +1,6 @@
 ---
 title: Wordle Assistant
-emoji: 🔎🔤
+emoji: 🔤
 colorFrom: blue
 colorTo: purple
 sdk: docker
