@@ -1,3 +1,15 @@
+---
+title: Wordle Assistant
+emoji: 🔎🔤
+colorFrom: blue
+colorTo: purple
+sdk: docker
+sdk_version: "{{sdkVersion}}"
+app_file: main.py
+app_port: 8080
+pinned: false
+---
+
 # Wordle Assistant
 
 An assistant to solve Wordle puzzles by suggesting the best next guess based on your previous guesses and feedback. 
