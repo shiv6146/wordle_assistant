@@ -28,5 +28,5 @@ USER mesop
 COPY . /srv/mesop-app
 WORKDIR /srv/mesop-app
 
-# Run Mesop through gunicorn. Should be available at localhost:8080
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "main:me"]
+# Run Mesop through gunicorn. Should be available at localhost:7860
+CMD ["gunicorn", "--bind", "0.0.0.0:7860", "main:me"]
