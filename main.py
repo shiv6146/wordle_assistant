@@ -85,6 +85,14 @@ class State:
     current_guess: str = ""
     current_feedback: str = ""
 
+@me.page(
+  security_policy=me.SecurityPolicy(
+    allowed_iframe_parents=[
+      'https://shiva6146-wordle-assistant.hf.space',
+    ]
+  )
+)
+
 def load(e: me.LoadEvent):
 	me.set_theme_mode("system")
 
