@@ -85,14 +85,6 @@ class State:
     current_guess: str = ""
     current_feedback: str = ""
 
-@me.page(
-  security_policy=me.SecurityPolicy(
-    allowed_iframe_parents=[
-      'https://shiva6146-wordle-assistant.hf.space',
-    ]
-  )
-)
-
 def load(e: me.LoadEvent):
 	me.set_theme_mode("system")
 
@@ -175,7 +167,11 @@ def get_top_suggestion(possible_targets: tuple[str, ...], previous_guesses: tupl
             best_word = word
     return best_word
 
-@me.page(on_load=load, path="/", title="Wordle Assistant")
+@me.page(on_load=load, path="/", title="Wordle Assistant", security_policy=me.SecurityPolicy(
+    allowed_iframe_parents=[
+      'https://shiva6146-wordle-assistant.hf.space',
+    ]
+  ))
 def app():
     state = me.state(State)
 
