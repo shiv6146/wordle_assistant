@@ -5,6 +5,7 @@ import pandas as pd
 from dataclasses import field
 import requests
 from bs4 import BeautifulSoup
+import re
 
 INTRO = '''
 # Wordle Assistant
@@ -42,35 +43,56 @@ USING = '''
 '''
 
 def get_wordle_words():
-   # URL of the webpage to scrape
-	url = 'https://www.wordunscrambler.net/word-list/wordle-word-list'
+    # URL of the page to scrape
+    url = 'https://wordfinder.yourdictionary.com/wordle/answers/'
 
-	# Send a GET request to the webpage
-	response = requests.get(url)
-	response.raise_for_status()  # Ensure the request was successful
+    # Fetch the page content
+    response = requests.get(url)
+    response.raise_for_status()  # Ensure the request was successful
 
-	# Parse the webpage content
-	soup = BeautifulSoup(response.text, 'html.parser')
+    # Parse the HTML content using BeautifulSoup
+    soup = BeautifulSoup(response.text, 'html.parser')
 
-	# Find all sections that start with "Wordle Words List Starting With"
-	sections = soup.find_all('h3', string=lambda text: text and text.startswith('Wordle Words List Starting With'))
+    # Define a regex pattern to match h2 headings with text like "All * Wordle Answers"
+    pattern = re.compile(r"All\s+.*\s+Wordle Answers", re.IGNORECASE)
 
-	# Initialize a list to store the words
-	wordle_words = []
+    # Find all <h2> elements whose text matches the pattern and get the table immediately following each
+    matching_tables = []
+    for h2 in soup.find_all("h2"):
+        h2_text = h2.get_text(strip=True)
+        if pattern.search(h2_text):
+            # Get the next sibling table after this h2 (skipping over non-tag nodes)
+            table = h2.find_next_sibling("table")
+            if table:
+                matching_tables.append(table)
 
-	# Iterate through each section
-	for section in sections:
-		# The next sibling tag after <h3> is the <ul> containing the words
-		ul_tag = section.find_next_sibling('ul')
-		if ul_tag:
-			# Find all <li> tags within the <ul>
-			li_tags = ul_tag.find_all('li')
-			# Extract and store the word from each <li> tag
-			for li in li_tags:
-				word = li.get_text(strip=True)
-				wordle_words.append(word)
-	
-	return wordle_words
+    # If no matching tables are found, exit.
+    if not matching_tables:
+        print("No matching tables found.")
+        exit()
+
+    # List to store all the Wordle answers
+    all_wordle_answers = []
+
+    # Process each matching table
+    for idx, table in enumerate(matching_tables):
+        # Get all rows from the table
+        rows = table.find_all("tr")
+        
+        # For the first table, skip the first two rows; for subsequent tables, skip only the header row
+        if idx == 0:
+            data_rows = rows[2:]
+        else:
+            data_rows = rows[1:]
+        
+        # Extract the Wordle answer from the last cell of each row
+        for row in data_rows:
+            cells = row.find_all("td")
+            if cells:  # Only process rows with data cells
+                word = cells[-1].get_text(strip=True)
+                all_wordle_answers.append(word)
+    
+    return all_wordle_answers
 
 
 ANSWER_WORDS = get_wordle_words()  # Historical answers
